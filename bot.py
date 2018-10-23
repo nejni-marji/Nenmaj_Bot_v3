@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from time import time
+from datetime import datetime
 import logging
 import importlib
 from traceback import print_exc
@@ -16,7 +17,7 @@ with open(root_dir + 'cache/start.txt') as f:
 	f.close()
 
 def log_time(text):
-	print('[{:12.6f}] {}'.format(time() - start, text))
+	print(datetime.now().strftime('[%Y-%m-%d %H:%M:%S.%f] {}'.format(text)))
 log_time('imported core libraries')
 
 log = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'

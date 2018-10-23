@@ -8,5 +8,5 @@ with open(root_dir + 'cache/start.txt', 'w') as f:
 	f.write(datetime.now().strftime('%s.%f'))
 	f.close()
 
-print('[    0.000000] running')
+print(datetime.now().strftime('[%Y-%m-%d %H:%M:%S.%f] running'))
 execl(root_dir + 'bot.py', '--')
