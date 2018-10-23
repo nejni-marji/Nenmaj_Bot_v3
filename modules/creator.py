@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 from os import execl
-from time import sleep, time
-from datetime import datetime, timedelta
+from time import sleep
+# libraries for commented functions
+#from time import sleep, time
+#from datetime import datetime, timedelta
 #from psutil import cpu_percent, virtual_memory
 
 from telegram.ext import CommandHandler, MessageHandler, Filters
