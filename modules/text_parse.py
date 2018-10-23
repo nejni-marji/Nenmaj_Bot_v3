@@ -47,6 +47,7 @@ def text_parse(bot, update):
 			chance = 5,
 			words = True,
 			markdown = False,
+			extras = {},
 			call = 'text',
 		):
 
@@ -58,7 +59,7 @@ def text_parse(bot, update):
 		match = re.search(pattern, text, flags = re.I) # arg: pattern
 
 		# declare this dict
-		bot_kwargs = {}
+		bot_kwargs = extras
 		# we always want to do this
 		bot_kwargs['reply_to_message_id'] = update.message.message_id
 		# we might want to do this
@@ -173,9 +174,9 @@ def text_parse(bot, update):
 			)
 			bot_resp(
 				"(rel|nenmaj) irl|open[- ]source|source code|foss",
-				#"AgADAwADrKcxGxf4GEwgaG2kIA2BeI30hjEABLCGgdjm9eXSgEYBAAEC",
 				"AgADAwADs6cxG7F2IU5xnR7ZCnfs6VEHhzEABKIU0x2zu1zMa4oBAAEC",
 				call = 'photo',
+				extras = {'caption': 'https://github.com/nejni-marji/Nenmaj_Bot_v3'},
 			)
 		elif not check_at_bot(): # when someone greets a group
 			hello_list = ['hi', 'hello', 'hey', 'heyo']

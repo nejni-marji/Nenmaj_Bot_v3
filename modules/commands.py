@@ -89,9 +89,11 @@ def echo(bot, update, args):
 			+ 'Also, {nl} will be replaced with a newline.'
 		)
 
-def foss(bot, update):
-	bot.send_photo(update.message.chat.id,
-		'AgADAwADrKcxGxf4GEwgaG2kIA2BeI30hjEABLCGgdjm9eXSgEYBAAEC'
+def github_link(bot, update):
+	bot.send_photo(
+		chat_id = update.message.chat.id,
+		photo = 'AgADAwADs6cxG7F2IU5xnR7ZCnfs6VEHhzEABKIU0x2zu1zMa4oBAAEC',
+		caption = 'https://github.com/nejni-marji/Nenmaj_Bot_v3',
 	)
 
 def add_handlers(dp, group):
@@ -101,5 +103,6 @@ def add_handlers(dp, group):
 		CommandHandler('nenmaj', identify),
 		CommandHandler('calc', calc, pass_args = True),
 		CommandHandler('echo', echo, pass_args = True),
-		#CommandHandler('foss', foss),
+		CommandHandler('github', github_link),
+		CommandHandler('foss', github_link),
 	]: dp.add_handler(i, group)
