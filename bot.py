@@ -33,7 +33,6 @@ dp.add_error_handler(error)
 
 
 module_list = [
-	'module_test',
 	'creator',
 	#'status',
 	'info',
