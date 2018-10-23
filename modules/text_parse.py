@@ -109,7 +109,7 @@ def text_parse(bot, update):
 		# This is a goddammed massterpiece. Don't ever change, nenmaj.
 		# He's changing. Welcome to the future! 2018-01-06
 		# Later the same day, I just noticed the spelling of "massterpiece".
-		if True:
+		if True: # general responses
 			bot_resp(
 				"^same( \w+)?$",
 				"same",
@@ -149,7 +149,7 @@ def text_parse(bot, update):
 				"Looks more like Jesus fucking Noah to me.",
 				chance = 0,
 			)
-		if check_at_bot():
+		if check_at_bot(): # respond to vocative
 			bot_resp(
 				'h(eyo?|ello|[ao]?i|owdy)|yo|oi|greetings|salutations|sup|'
 				+ 'good ((eve|mor)ning|day|afternoon)',
@@ -173,14 +173,21 @@ def text_parse(bot, update):
 				's+h+|be (quie|silen)t|shut up',
 				'You can\'t tell me to be quiet!',
 			)
-		if check_at_bot():
 			bot_resp(
 				"(rel|nenmaj) irl|open[- ]source|source code|foss",
 				#"AgADAwADrKcxGxf4GEwgaG2kIA2BeI30hjEABLCGgdjm9eXSgEYBAAEC",
 				"AgADAwADs6cxG7F2IU5xnR7ZCnfs6VEHhzEABKIU0x2zu1zMa4oBAAEC",
 				call = 'photo',
 			)
-		if False and check_at_bot():
+		elif not check_at_bot(): # when someone greets a group
+			hello_list = ['hi', 'hello', 'hey', 'heyo']
+			hello = hello_list[randint(0, len(hello_list) - 1)].capitalize()
+			# response for when someone greets a group
+			bot_resp(
+				'h(i|ello|eyo?),? ((y\'?)?all|everyone|people|ppl)',
+				hello + ', {first_name}!',
+			)
+		if True and check_at_bot(): # respond to vocative (eo)
 			for i in permutations(['mi', 'amas', 'vin']):
 				bot_resp(
 					' '.join(i),
@@ -216,16 +223,10 @@ def text_parse(bot, update):
 				'ŝ+|(kviet|silent|ferm)iĝu',
 				'Vi ne povas kvietigi min!',
 			)
-		elif not check_at_bot():
-			hello_list = ['hi', 'hello', 'hey', 'heyo']
-			hello = hello_list[randint(0, len(hello_list) - 1)].capitalize()
-			bot_resp(
-				'h(i|ello|eyo?),? ((y\'?)?all|everyone|people|ppl)',
-				hello + ', {first_name}!',
-			)
-		elif False and not check_at_bot():
+		elif False and not check_at_bot(): # when someone greets a group (eo)
 			sal_list = ['sal', 'saluton', 'resal']
 			sal = sal_list[randint(0, len(sal_list) - 1)].capitalize()
+			# response for when someone greets a group
 			bot_resp(
 				'sal(uton)?( al|,?) (vi )?(c[hx]|ĉ)iuj?( vi)?',
 				sal + ', {first_name}!',
