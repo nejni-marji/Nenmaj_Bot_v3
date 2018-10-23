@@ -106,9 +106,7 @@ def text_parse(bot, update):
 			return False
 
 	def bot_responses():
-		# This is a goddammed massterpiece. Don't ever change, nenmaj.
-		# He's changing. Welcome to the future! 2018-01-06
-		# Later the same day, I just noticed the spelling of "massterpiece".
+		# Various simple responses to text stimulus.
 		if True: # general responses
 			bot_resp(
 				"^same( \w+)?$",
