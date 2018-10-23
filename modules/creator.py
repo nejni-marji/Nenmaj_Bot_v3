@@ -36,49 +36,52 @@ def bot_shutdown(bot, update):
 	#execl(root_dir + 'bin/shutdown.py', '--')
 	execl(root_dir + 'shutdown.py', '--')
 
-#def bot_system(bot, update):
-#	resp = []
-#	# get ping
-#	delta = datetime.now() - update.message.date
-#	resp.append('Ping: ' + str(delta))
-#	# get uptime
-#	date = datetime(1, 1, 1) + timedelta(seconds = time() - start)
-#	now = datetime.now().strftime('%H:%M:%S')
-#	days = date.day-1
-#	hours = date.strftime('%H:%M:%S')
-#	if days:
-#		resp.append('Uptime: {}, {} days, {}'.format(now, days, hours))
-#	else:
-#		resp.append('Uptime: {}, {}'.format(now, hours))
-#	# get cpu
-#	cpu = cpu_percent()
-#	# get ram
-#	ram = virtual_memory().percent
-#	resp.append('CPU: %.3f%%' % cpu)
-#	resp.append('RAM: %.3f%%' % ram)
-#	# send message
-#	bot.send_message(update.message.chat.id,
-#		'\n'.join(resp),
-#		reply_to_message_id = update.message.message_id,
-#	)
+# I don't want to use this right now
+'''
+def bot_system(bot, update):
+	resp = []
+	# get ping
+	delta = datetime.now() - update.message.date
+	resp.append('Ping: ' + str(delta))
+	# get uptime
+	date = datetime(1, 1, 1) + timedelta(seconds = time() - start)
+	now = datetime.now().strftime('%H:%M:%S')
+	days = date.day-1
+	hours = date.strftime('%H:%M:%S')
+	if days:
+		resp.append('Uptime: {}, {} days, {}'.format(now, days, hours))
+	else:
+		resp.append('Uptime: {}, {}'.format(now, hours))
+	# get cpu
+	cpu = cpu_percent()
+	# get ram
+	ram = virtual_memory().percent
+	resp.append('CPU: %.3f%%' % cpu)
+	resp.append('RAM: %.3f%%' % ram)
+	# send message
+	bot.send_message(update.message.chat.id,
+		'\n'.join(resp),
+		reply_to_message_id = update.message.message_id,
+	)
 
-#def notify(bot, update):
-#	if update.message.from_user.id in (owner, bot.id):
-#		return None
-#
-#	member = bot.get_chat_member(
-#		update.message.chat.id,
-#		owner
-#	)
-#	unreadable = not member.status in ('creator', 'administrator', 'member')
-#	private = update.message.chat.id > 0
-#
-#	if unreadable or private:
-#		bot.forward_message(
-#			chat_id = owner,
-#			from_chat_id = update.message.chat.id,
-#			message_id = update.message.message_id
-#		)
+def notify(bot, update):
+	if update.message.from_user.id in (owner, bot.id):
+		return None
+
+	member = bot.get_chat_member(
+		update.message.chat.id,
+		owner
+	)
+	unreadable = not member.status in ('creator', 'administrator', 'member')
+	private = update.message.chat.id > 0
+
+	if unreadable or private:
+		bot.forward_message(
+			chat_id = owner,
+			from_chat_id = update.message.chat.id,
+			message_id = update.message.message_id
+		)
+'''
 
 def add_handlers(dp, group):
 	for i in [
