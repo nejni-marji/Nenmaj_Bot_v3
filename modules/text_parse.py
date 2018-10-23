@@ -7,7 +7,6 @@ from telegram import ParseMode
 from telegram.ext import MessageHandler, Filters
 
 from share.data import owner
-myself = owner # haha lol
 from bin.background import background
 
 '''
@@ -39,7 +38,7 @@ def text_parse(bot, update):
 		bot_pm = update.message.chat_id > 0
 		at_bot = bot_named or bot_replied or bot_pm
 		my_bot = re.search('\\b(m(y|ia) (ro)?boto?|(ro)?boto? mia)\\b', text.lower())
-		master = (at_bot or my_bot) and user.id == myself
+		master = (at_bot or my_bot) and user.id == owner
 		return at_bot or master
 
 	def bot_resp(
@@ -67,7 +66,7 @@ def text_parse(bot, update):
 			bot_kwargs['parse_mode'] = ParseMode.MARKDOWN
 
 		# Bob
-		if update.message.from_user.id == myself:
+		if update.message.from_user.id == owner:
 			bob = update.message.from_user.first_name
 		else:
 			bob = 'Bob'

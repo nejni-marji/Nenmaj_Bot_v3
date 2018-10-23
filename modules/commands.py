@@ -7,8 +7,6 @@ from re import match
 from telegram.constants import MAX_MESSAGE_LENGTH
 from telegram.ext import CommandHandler
 
-from share.data import owner
-myself = owner # haha lol
 from bin.background import background
 
 def start(bot, update):

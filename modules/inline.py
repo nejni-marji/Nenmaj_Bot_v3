@@ -6,8 +6,6 @@ from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram import ParseMode
 from telegram.ext import InlineQueryHandler
 
-from share.data import owner
-myself = owner # haha lol
 from bin.background import background
 from share.constants import fullwidth
 
