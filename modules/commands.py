@@ -3,11 +3,13 @@ from multiprocessing import Process, Queue
 from resource import RLIMIT_CPU, getrlimit, setrlimit
 from queue import Empty
 from re import match
+from random import choice
 
 from telegram.constants import MAX_MESSAGE_LENGTH
 from telegram.ext import CommandHandler
 
 from bin.background import background
+from bin.rhymes import get_www_rhymes
 
 def start(bot, update):
 	bot.send_message(update.message.chat.id, 'Started!')
@@ -96,8 +98,57 @@ def github_link(bot, update):
 		caption = 'https://github.com/nejni-marji/Nenmaj_Bot_v3',
 	)
 
+@background
+def tg_rhyme(bot, update, args):
+	if not args:
+		return None
+
+	print('{} ({}) asked for rhymes.'.format(
+		update.message.from_user.first_name,
+		update.message.from_user.id,
+	))
+	print('Processing to obtain rhymes for: %s' % ' '.join(args))
+
+	def get_clean_rhyme_list(query):
+		print('Getting rhymes for: %s' % query)
+		to_clean = get_www_rhymes(query)
+		if not to_clean:
+			return [':(', ':\'(', 'ono', 'OnO', 'TnT', 'orz']
+		else:
+			return to_clean
+
+	queries = [arg.rstrip(',').lstrip('@') for arg in args]
+	if False and len(queries) > 10:
+		resp = "That's just too many words, dude. (Max: 10)"
+	else:
+		clean_lists = [get_clean_rhyme_list(query) for query in queries]
+		rhymes = [choice(clean_list) for clean_list in clean_lists]
+		resp = ', '.join(rhymes)
+
+	bot.send_message(update.message.chat.id,
+		resp,
+		reply_to_message_id = update.message.message_id
+	)
+
+@background
+def tg_rhyme_all(bot, update, args):
+	if not args:
+		return None
+
+	print('Processing to obtain ALL rhymes for: %s' % ' '.join(args))
+	rhymes = get_www_rhymes(args[0])
+	resp = ', '.join(rhymes)
+
+	bot.send_message(update.message.chat.id,
+		resp,
+		reply_to_message_id = update.message.message_id
+	)
+
 def add_handlers(dp, group):
 	for i in [
+		CommandHandler('rhyme', tg_rhyme, pass_args = True),
+		CommandHandler('rhymes', tg_rhyme, pass_args = True),
+		CommandHandler('rhymeall', tg_rhyme_all, pass_args = True),
 		CommandHandler('start', start),
 		CommandHandler('relmaj', identify),
 		CommandHandler('nenmaj', identify),
