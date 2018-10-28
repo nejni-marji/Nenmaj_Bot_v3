@@ -173,7 +173,7 @@ def text_parse(bot, update):
 				'You can\'t tell me to be quiet!',
 			)
 			bot_resp(
-				"(rel|nenmaj) irl|open[- ]source|source code|foss",
+				"(rel|nenmaj) irl|open[- ]source|source code|github|foss",
 				"AgADAwADs6cxG7F2IU5xnR7ZCnfs6VEHhzEABKIU0x2zu1zMa4oBAAEC",
 				call = 'photo',
 				extras = {'caption': 'https://github.com/nejni-marji/Nenmaj_Bot_v3'},
