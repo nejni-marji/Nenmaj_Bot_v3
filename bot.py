@@ -40,7 +40,7 @@ module_list = [
 	'commands',
 	'text_parse',
 	'inline',
-	#'buttons',
+	'buttons',
 ]
 
 for i in enumerate(module_list):
