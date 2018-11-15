@@ -98,6 +98,9 @@ def github_link(bot, update):
 		caption = 'https://github.com/nejni-marji/Nenmaj_Bot_v3',
 	)
 
+
+NO_RHYMES = [':(', ':\'(', 'ono', 'OnO', 'TnT', 'orz']
+
 @background
 def tg_rhyme(bot, update, args):
 	if not args:
@@ -113,7 +116,7 @@ def tg_rhyme(bot, update, args):
 		print('Getting rhymes for: %s' % query)
 		to_clean = get_www_rhymes(query)
 		if not to_clean:
-			return [':(', ':\'(', 'ono', 'OnO', 'TnT', 'orz']
+			return NO_RHYMES
 		else:
 			return to_clean
 
@@ -138,6 +141,8 @@ def tg_rhyme_all(bot, update, args):
 	print('Processing to obtain ALL rhymes for: %s' % ' '.join(args))
 	rhymes = get_www_rhymes(args[0])
 	resp = ', '.join(rhymes)
+	if not resp:
+		resp = choice(NO_RHYMES)
 
 	bot.send_message(update.message.chat.id,
 		resp,
