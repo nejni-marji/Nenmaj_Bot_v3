@@ -13,10 +13,13 @@ from share.constants import root_dir
 path = root_dir + 'share/'
 with open(path + 'roflcopter1.txt') as f:
 	rofl_1 = f.read()
+	f.close()
 with open(path + 'roflcopter2.txt') as f:
 	rofl_2 = f.read()
+	f.close()
 with open(path + 'roflcopter.txt') as f:
 	rofl_x = f.read()
+	f.close()
 
 rofl_list = [
 	'```\n%s\n```' % i for i in
