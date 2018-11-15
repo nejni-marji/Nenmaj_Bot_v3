@@ -77,7 +77,7 @@ def fly_rofl(bot, chat_data, chat_id, message_id):
 		# if rofl_land has been called, stop
 		if message_id in chat_data and chat_data[message_id] == 'rofl_land':
 			land_rofl(bot, chat_data, chat_id, message_id)
-			break
+			return None
 		bot.edit_message_text(
 			chat_id = chat_id,
 			message_id = message_id,
