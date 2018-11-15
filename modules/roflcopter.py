@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 from os.path import dirname
 from time import sleep
+import re
 
 from telegram import ParseMode
 from telegram import InlineKeyboardButton as IKButton
 from telegram import InlineKeyboardMarkup as IKMarkup
 from telegram.ext import CommandHandler, CallbackQueryHandler
+from telegram.ext import MessageHandler, Filters
 
 from bin.background import background
 from share.constants import root_dir
@@ -158,8 +160,14 @@ def rofl_button(bot, update, chat_data):
 	else:
 		pass
 
+def text_rofl(bot, update, chat_data):
+	search = re.search('rofl(?!copter)', update.message.text, re.I)
+	if search:
+		start_rofl(bot, update, chat_data)
+
 def add_handlers(dp, group):
 	for i in [
 		CommandHandler('rofl', start_rofl, pass_chat_data = True),
+		MessageHandler(Filters.text, text_rofl, pass_chat_data = True),
 		CallbackQueryHandler(rofl_button, pattern = 'rofl', pass_chat_data = True)
 	]: dp.add_handler(i, group)
