@@ -5,55 +5,130 @@ from uuid import uuid4
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram import ParseMode
 from telegram.ext import InlineQueryHandler
+from telegram.error import BadRequest
 
 from bin.background import background
 from share.constants import fullwidth
 
-strike = re.compile('<s>(.(?!</s>))+.</s>')
-def strike_text(text):
-	pretext = text
-	match = strike.search(text)
-	while match:
-		text = text.replace(
-			match.group(),
-			'\u0336'.join(list(match.group()[3:-4])) + '\u0336',
-			1
-		)
-		match = strike.search(text)
-	if pretext == text:
-		text = '\u0336'.join(list(text)) + '\u0336'
-	return text
+def manip_strike(to_repl):
+	repl = '\u0336'.join(list(to_repl)) + '\u0336'
+	return repl
+
+def manip_under(to_repl):
+	repl = '\u0332'.join(list(to_repl)) + '\u0332'
+	return repl
+
+def manip_vapor(to_repl):
+	repl = ''
+	for i in list(to_repl):
+		if i == ' ':
+			repl += '    '
+		elif i not in fullwidth:
+			repl += i
+		else:
+			repl += chr(0xFEE0 + ord(i))
+	return repl
+
+manips = {
+	's': manip_strike,
+	'u': manip_under,
+	'v': manip_vapor,
+}
+
+manip_demos = {
+	's': 'S̶t̶r̶i̶k̶e̶t̶h̶r̶o̶u̶g̶h̶',
+	'v': 'Ｖａｐｏｒｗａｖｅ',
+	'u': 'U̲n̲d̲e̲r̲l̲i̲n̲e̲',
+}
+
+re_manips = re.compile('<([%s])>.*?</\\1>' % ''.join(list(manips)))
+
+def manip_manips(query):
+	if not '<' in query:
+		return query
+
+	match = re_manips.search(query)
+	if not match:
+		return query
+
+	manip = manips[match.group(1)]
+	return manip_manips(
+		query.replace(match.group(),
+		manip(match.group()[3:-4]))
+	)
 
 @background
 def inlinequery(bot, update):
 	inline_query = update.inline_query
 	query = update.inline_query.query
-	results = []
+	user = update.inline_query.from_user
+	print('InlineQuery from {} ({}):\n"{}"'.format(
+		user.first_name, user.id, query
+	))
 
-	def inline_help():
+	def inline_help(r):
 		help_text = [
-			'If you\'ve never used an inline bot before, <a href="https://telegram.org/blog/inline-bots">click here!</a>',
+			'If you\'ve never used an inline bot before, [click here!](https://telegram.org/blog/inline-bots)"',
 			'Otherwise, read on.',
 			'',
-			'Strikethrough:',
-			'foo →  f̶o̶o̶',
-			'&lt;s&gt;foo&lt;/s&gt; bar →  f̶o̶o̶ bar',
+			'You can use Telegram\'s native HTML tags:',
+			'<b>, <i>, <a>, <code>, <pre>',
 			'',
-			'Vaporwave:',
-			'foo → ｆｏｏ',
+			'You can also use my custom HTML tags:',
+			'%s: <s>' % manip_demos['s'],
+			'%s: <v>' % manip_demos['v'],
+			'%s: <u>' % manip_demos['u'],
 			'',
-			'Markdown:',
-			'_italics_, *bold*, `code` → <i>italics</i>, <b>bold</b>, <code>code</code>',
-			'You can also embed URLs:',
-			'[example](https://example.org) → <a href="https://example.org">example</a>',
-			'',
-			'If you want to display an image preview of the URL, select "Markdown (Preview)". If not, select "Markdown (No Preview)".',
+			'The bot should automatically determine what modes to enable based on your query.',
+			'Lastly, if you use <a>, you should get an option to disable web preview.'
 		]
 
 		text = '\n'.join(help_text)
 		desc = 'Don\'t know how this works? Click here!'
-		results.append(InlineQueryResultArticle(id = uuid4(),
+		r.append(InlineQueryResultArticle(id = uuid4(),
 			title = 'Help and Usage',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+				parse_mode = ParseMode.MARKDOWN,
+				disable_web_page_preview = True
+			)
+		))
+
+	def inline_error(r):
+		text = 'This message should not appear.'
+		desc = text
+		r.append(InlineQueryResultArticle(id=uuid4(),
+			title = 'Error',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+				parse_mode = ParseMode.HTML,
+			)
+		))
+
+	def inline_html(r):
+		if not ('<' in query and '>' in query):
+			return None
+		text = query
+		desc = text
+		r.append(InlineQueryResultArticle(id=uuid4(),
+			title = 'HTML',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+				parse_mode = ParseMode.HTML,
+				disable_web_page_preview = False
+			)
+		))
+
+	def inline_html_noprev(r):
+		if not ('<a href' in query and '</a>' in query):
+			return None
+		text = query
+		desc = text
+		r.append(InlineQueryResultArticle(id=uuid4(),
+			title = 'HTML (No Preview)',
 			description = desc,
 			input_message_content = InputTextMessageContent(
 				text,
@@ -62,71 +137,97 @@ def inlinequery(bot, update):
 			)
 		))
 
-	def strikethrough():
-		text = strike_text(query)
+	def inline_manips(r):
+		if not ('<' in query and '>' in query):
+			return None
+		text = manip_manips(query)
+		if text == query:
+			return None
 		desc = text
-		results.append(InlineQueryResultArticle(id = uuid4(),
-			title = 'Strikethrough',
+		r.append(InlineQueryResultArticle(id = uuid4(),
+			title = 'Manips',
 			description = desc,
 			input_message_content = InputTextMessageContent(
 				text,
-				parse_mode = ParseMode.MARKDOWN
+				parse_mode = ParseMode.HTML
 			)
 		))
 
-	def vaporwave():
-		text = ''
-		for i in list(query):
-			if i == ' ':
-				text += '    '
-			elif i not in fullwidth:
-				text += i
-			else:
-				text += chr(0xFEE0 + ord(i))
+	def inline_manips_noprev(r):
+		if not ('<a href' in query and '</a>' in query):
+			return None
+		if not ('<' in query and '>' in query):
+			return None
+		text = manip_manips(query)
+		if text == query:
+			return None
 		desc = text
-		results.append(InlineQueryResultArticle(id = uuid4(),
-			title = 'Vaporwave',
-			description = desc,
-			input_message_content = InputTextMessageContent(
-				text
-			)
-		))
-
-	def markdown_noprev():
-		text = query
-		desc = text
-		results.append(InlineQueryResultArticle(id=uuid4(),
-			title = 'Markdown (No Preview)',
+		r.append(InlineQueryResultArticle(id = uuid4(),
+			title = 'Manips (No Preview)',
 			description = desc,
 			input_message_content = InputTextMessageContent(
 				text,
-				parse_mode = ParseMode.MARKDOWN,
+				parse_mode = ParseMode.HTML,
 				disable_web_page_preview = True
 			)
 		))
 
-	def markdown_prev():
-		text = query
+	def inline_strike(r):
+		text = manip_strike(query)
 		desc = text
-		results.append(InlineQueryResultArticle(id=uuid4(),
-			title = 'Markdown (Preview)',
+		r.append(InlineQueryResultArticle(id = uuid4(),
+			title = 'Strikethrough',
 			description = desc,
 			input_message_content = InputTextMessageContent(
 				text,
-				parse_mode = ParseMode.MARKDOWN,
-				disable_web_page_preview = False
 			)
 		))
 
-	inline_help()
-	if query:
-		strikethrough()
-		vaporwave()
-		markdown_noprev()
-		markdown_prev()
+	def inline_under(r):
+		text = manip_under(query)
+		desc = text
+		r.append(InlineQueryResultArticle(id = uuid4(),
+			title = 'Underline',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+			)
+		))
 
-	# send inline query results
-	bot.answer_inline_query(update.inline_query.id, results, cache_time = 0)
+	def inline_vapor(r):
+		text = manip_vapor(query)
+		desc = text
+		r.append(InlineQueryResultArticle(id = uuid4(),
+			title = 'Vaporwave',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+			)
+		))
+
+	def clean_results(n = 0):
+		r = []
+		inline_help(r)
+		if query and n <= 2:
+			if n <= 0:
+				inline_html(r)
+				inline_html_noprev(r)
+			if n <= 1:
+				inline_manips(r)
+				inline_manips_noprev(r)
+			# n <= 2:
+			inline_strike(r)
+			inline_vapor(r)
+			inline_under(r)
+		elif n >= 3:
+			r = []
+			inline_error(r)
+		try:
+			bot.answer_inline_query(update.inline_query.id, r, cache_time = 0)
+		except BadRequest:
+			clean_results(n = n+1)
+
+	clean_results()
 
 def add_handlers(dp, group):
 	for i in [
