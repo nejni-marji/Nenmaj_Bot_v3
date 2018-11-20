@@ -206,6 +206,8 @@ def inlinequery(bot, update):
 		))
 
 	def clean_results(n = 0):
+		if n >= 3:
+			raise RecursionError('clean_results() reached n=%d' % n)
 		r = []
 		inline_help(r)
 		if query and n <= 2:
@@ -219,15 +221,15 @@ def inlinequery(bot, update):
 			inline_strike(r)
 			inline_vapor(r)
 			inline_under(r)
-		elif n >= 3:
-			r = []
-			inline_error(r)
 		try:
 			bot.answer_inline_query(update.inline_query.id, r, cache_time = 0)
 		except BadRequest:
 			clean_results(n = n+1)
 
-	clean_results()
+	try:
+		clean_results()
+	except RecursionError as e:
+		print('RecursionError: ' + e.__str__())
 
 def add_handlers(dp, group):
 	for i in [
