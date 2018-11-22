@@ -57,6 +57,22 @@ def manip_manips(query):
 		manip(match.group()[3:-4]))
 	)
 
+help_text = [
+	'If you\'ve never used an inline bot before, [click here!](https://telegram.org/blog/inline-bots)"',
+	'Otherwise, read on.',
+	'',
+	'You can use Telegram\'s native HTML tags:',
+	'<b>, <i>, <a>, <code>, <pre>',
+	'',
+	'You can also use my custom HTML tags:',
+	'%s: <s>' % manip_demos['s'],
+	'%s: <v>' % manip_demos['v'],
+	'%s: <u>' % manip_demos['u'],
+	'',
+	'The bot should automatically determine what modes to enable based on your query.',
+	'Lastly, if you use <a>, you should get an option to disable web preview.'
+]
+
 @background
 def inlinequery(bot, update):
 	inline_query = update.inline_query
@@ -67,22 +83,6 @@ def inlinequery(bot, update):
 	))
 
 	def inline_help(r):
-		help_text = [
-			'If you\'ve never used an inline bot before, [click here!](https://telegram.org/blog/inline-bots)"',
-			'Otherwise, read on.',
-			'',
-			'You can use Telegram\'s native HTML tags:',
-			'<b>, <i>, <a>, <code>, <pre>',
-			'',
-			'You can also use my custom HTML tags:',
-			'%s: <s>' % manip_demos['s'],
-			'%s: <v>' % manip_demos['v'],
-			'%s: <u>' % manip_demos['u'],
-			'',
-			'The bot should automatically determine what modes to enable based on your query.',
-			'Lastly, if you use <a>, you should get an option to disable web preview.'
-		]
-
 		text = '\n'.join(help_text)
 		desc = 'Don\'t know how this works? Click here!'
 		r.append(InlineQueryResultArticle(id = uuid4(),
