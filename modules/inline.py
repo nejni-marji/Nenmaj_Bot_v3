@@ -63,6 +63,7 @@ help_text = [
 	'',
 	'You can use Telegram\'s native HTML tags:',
 	'<b>, <i>, <a>, <code>, <pre>',
+	'If you use <a>, you should get an option to disable web preview.',
 	'',
 	'You can also use my custom HTML tags:',
 	'%s: <s>' % manip_demos['s'],
@@ -70,7 +71,6 @@ help_text = [
 	'%s: <u>' % manip_demos['u'],
 	'',
 	'The bot should automatically determine what modes to enable based on your query.',
-	'Lastly, if you use <a>, you should get an option to disable web preview.'
 ]
 
 @background
