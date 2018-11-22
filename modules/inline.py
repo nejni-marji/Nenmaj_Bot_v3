@@ -1,14 +1,31 @@
 #!/usr/bin/env python3
 import re
 from uuid import uuid4
+from collections import OrderedDict
 
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram import ParseMode
-from telegram.ext import InlineQueryHandler
+from telegram.ext import InlineQueryHandler, CommandHandler
 from telegram.error import BadRequest
 
 from bin.background import background
 from share.constants import fullwidth
+
+subs_dict = OrderedDict([
+	('shrug', '¯\_(ツ)_/¯'),
+	('lenny', '( ͡° ͜ʖ ͡°)'),
+	('cccp', '☭'),
+	('ib', '‽'),
+	('fake_cmd', '/\xad'),
+	('long_jbo', 'jbojevysofkemsuzgugje\'ake\'eborkemfaipaltrusi\'oke\'ekemgubyseltru'),
+])
+
+subs_text = '\n'.join([
+	'{{{}}}: {}'.format(
+		i, subs_dict[i]
+	)
+	for i in subs_dict
+])
 
 def manip_strike(to_repl):
 	repl = '\u0336'.join(list(to_repl)) + '\u0336'
@@ -70,6 +87,9 @@ help_text = [
 	'%s: <v>' % manip_demos['v'],
 	'%s: <u>' % manip_demos['u'],
 	'',
+	'The bot can replace certain values delimited with braces',
+	'Click on \'Replacements\' in inline mode to see the full list.',
+	'',
 	'The bot should automatically determine what modes to enable based on your query.',
 ]
 
@@ -81,6 +101,31 @@ def inlinequery(bot, update):
 	print('InlineQuery from {} ({}):\n"{}"'.format(
 		user.first_name, user.id, query
 	))
+
+	try:
+		query = query.format(**subs_dict)
+	except:
+		pass
+
+	if update.inline_query.query == query:
+		subbed = False
+	else:
+		subbed = True
+
+	def inline_subs(r):
+		if subbed:
+			text = query
+			desc = text
+		else:
+			text = subs_text
+			desc = 'Click here to see replacements.'
+		r.append(InlineQueryResultArticle(id=uuid4(),
+			title = 'Replacements',
+			description = desc,
+			input_message_content = InputTextMessageContent(
+				text,
+			)
+		))
 
 	def inline_help(r):
 		text = '\n'.join(help_text)
@@ -210,6 +255,7 @@ def inlinequery(bot, update):
 			raise RecursionError('clean_results() reached n=%d' % n)
 		r = []
 		inline_help(r)
+		inline_subs(r)
 		if query and n <= 2:
 			if n <= 0:
 				inline_html(r)
